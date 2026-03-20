@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Styflake Admin Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --orange: #F97316;
+  --orange-light: #FFF7ED;
+  --black: #111;
+  --card: #ffffff;
+  --bg: #f5f5f5;
+  --border: #e8e8e8;
+  --text: #1a1a1a;
+  --muted: #888;
+  --success: #16a34a;
+  --danger: #dc2626;
+  --shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+
+/* ── LOGIN ── */
+.login-screen {
+  min-height:100vh; display:flex; align-items:center; justify-content:center;
+  background: linear-gradient(135deg, #111 0%, #1a0800 100%);
+  padding:20px;
+}
+.login-box {
+  background:#fff; border-radius:20px; padding:36px 28px;
+  width:100%; max-width:360px; text-align:center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+.login-logo { font-size:28px; font-weight:900; margin-bottom:4px; }
+.login-logo span { color:var(--orange); }
+.login-sub { font-size:13px; color:var(--muted); margin-bottom:24px; }
+.login-label { font-size:12px; font-weight:700; color:var(--muted); text-align:left; margin-bottom:5px; display:block; }
+.login-input {
+  width:100%; border:1.5px solid var(--border); border-radius:10px;
+  padding:12px 14px; font-family:'DM Sans',sans-serif; font-size:14px;
+  outline:none; margin-bottom:14px; transition:border-color 0.2s;
+}
+.login-input:focus { border-color:var(--orange); }
+.login-btn {
+  width:100%; background:var(--orange); color:#fff;
+  font-size:14px; font-weight:800; padding:13px;
+  border-radius:10px; border:none; cursor:pointer;
+  transition:opacity 0.15s;
+}
+.login-btn:hover { opacity:0.9; }
+.login-error { font-size:12px; color:var(--danger); margin-top:8px; display:none; }
+
+/* ── MAIN LAYOUT ── */
+.admin-wrap { display:none; }
+.admin-wrap.visible { display:flex; min-height:100vh; }
+
+/* SIDEBAR */
+.sidebar {
+  width:220px; background:var(--black); color:#fff;
+  display:flex; flex-direction:column;
+  position:fixed; top:0; left:0; bottom:0; z-index:50;
+  transition:transform 0.3s;
+}
+.sidebar-logo {
+  padding:20px 18px 16px;
+  border-bottom:1px solid #222;
+  font-size:22px; font-weight:900;
+}
+.sidebar-logo span { color:var(--orange); }
+.sidebar-logo small { display:block; font-size:10px; color:#555; font-weight:400; margin-top:2px; }
+
+.sidebar-nav { flex:1; padding:12px 0; overflow-y:auto; }
+.nav-item {
+  display:flex; align-items:center; gap:10px;
+  padding:12px 18px; cursor:pointer; font-size:13px; font-weight:600;
+  color:#888; transition:all 0.2s; border-left:3px solid transparent;
+}
+.nav-item:hover { color:#fff; background:rgba(255,255,255,0.05); }
+.nav-item.active { color:var(--orange); border-left-color:var(--orange); background:rgba(249,115,22,0.08); }
+.nav-item .ni { font-size:16px; }
+
+.sidebar-bottom {
+  padding:16px 18px; border-top:1px solid #222;
+}
+.logout-btn {
+  width:100%; background:rgba(220,38,38,0.1); border:1px solid rgba(220,38,38,0.2);
+  color:#dc2626; font-size:12px; font-weight:700;
+  padding:10px; border-radius:8px; cursor:pointer;
+  transition:background 0.2s;
+}
+.logout-btn:hover { background:rgba(220,38,38,0.2); }
+
+/* MAIN CONTENT */
+.main-content {
+  margin-left:220px; flex:1; padding:24px 20px;
+  max-width:100%; overflow-x:hidden;
+}
+
+/* TOP BAR */
+.topbar {
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:24px; flex-wrap:wrap; gap:10px;
+}
+.topbar h1 { font-size:22px; font-weight:800; }
+.topbar h1 span { color:var(--orange); }
+.save-btn {
+  background:var(--orange); color:#fff;
+  font-size:13px; font-weight:800;
+  padding:10px 20px; border-radius:10px; border:none; cursor:pointer;
+  transition:opacity 0.15s, transform 0.15s;
+  display:flex; align-items:center; gap:6px;
+}
+.save-btn:hover { opacity:0.9; transform:scale(1.03); }
+
+/* TOAST */
+.toast {
+  position:fixed; bottom:20px; left:50%; transform:translateX(-50%) translateY(80px);
+  background:var(--black); color:#fff; font-size:13px; font-weight:600;
+  padding:12px 24px; border-radius:30px; z-index:999;
+  box-shadow:0 8px 30px rgba(0,0,0,0.2);
+  transition:transform 0.3s ease;
+  display:flex; align-items:center; gap:8px;
+}
+.toast.show { transform:translateX(-50%) translateY(0); }
+.toast .tick { color:var(--orange); }
+
+/* CARDS */
+.card {
+  background:var(--card); border-radius:16px;
+  border:1px solid var(--border); padding:20px;
+  box-shadow:var(--shadow); margin-bottom:16px;
+}
+.card-title { font-size:14px; font-weight:800; margin-bottom:16px; color:var(--text); display:flex; align-items:center; gap:8px; }
+.card-title span { color:var(--orange); }
+
+/* STATS */
+.stats-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-bottom:20px; }
+.stat-card {
+  background:var(--card); border-radius:14px; padding:16px;
+  border:1px solid var(--border); box-shadow:var(--shadow);
+}
+.stat-label { font-size:11px; color:var(--muted); font-weight:600; margin-bottom:4px; }
+.stat-value { font-size:24px; font-weight:900; }
+.stat-value.orange { color:var(--orange); }
+.stat-value.green  { color:var(--success); }
+.stat-sub { font-size:10px; color:var(--muted); margin-top:2px; }
+
+/* FORM ELEMENTS */
+.form-row { margin-bottom:14px; }
+.form-label { font-size:12px; font-weight:700; color:var(--muted); display:block; margin-bottom:5px; }
+.form-input, .form-select, .form-textarea {
+  width:100%; border:1.5px solid var(--border); border-radius:10px;
+  padding:10px 13px; font-family:'DM Sans',sans-serif; font-size:13px; color:var(--text);
+  outline:none; transition:border-color 0.2s; background:#fff;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus { border-color:var(--orange); }
+.form-textarea { resize:vertical; min-height:80px; }
+.form-row-2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+
+/* PRODUCT LIST */
+.product-list { display:flex; flex-direction:column; gap:10px; }
+.product-item {
+  background:#fff; border:1.5px solid var(--border); border-radius:14px;
+  padding:14px; display:flex; align-items:center; gap:12px;
+  transition:border-color 0.2s;
+}
+.product-item:hover { border-color:var(--orange); }
+.product-item-img {
+  width:56px; height:56px; border-radius:10px; object-fit:cover;
+  background:var(--bg); flex-shrink:0;
+  display:flex; align-items:center; justify-content:center; font-size:24px;
+  overflow:hidden;
+}
+.product-item-img img { width:100%; height:100%; object-fit:cover; }
+.product-item-info { flex:1; min-width:0; }
+.product-item-brand { font-size:12px; font-weight:800; }
+.product-item-name  { font-size:11px; color:var(--muted); margin-bottom:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.product-item-price { font-size:12px; font-weight:700; color:var(--orange); }
+.product-item-platform { font-size:9px; font-weight:700; padding:2px 7px; border-radius:5px; margin-left:5px; }
+.pt-m { background:rgba(255,63,108,0.1); color:#ff3f6c; }
+.pt-n { background:rgba(231,84,128,0.1); color:#e75480; }
+.product-item-actions { display:flex; gap:6px; flex-shrink:0; }
+.btn-edit, .btn-del {
+  font-size:11px; font-weight:700; padding:6px 12px;
+  border-radius:8px; border:none; cursor:pointer; transition:opacity 0.15s;
+}
+.btn-edit { background:var(--orange-light); color:var(--orange); border:1px solid rgba(249,115,22,0.2); }
+.btn-del  { background:rgba(220,38,38,0.08); color:var(--danger); border:1px solid rgba(220,38,38,0.15); }
+.btn-edit:hover, .btn-del:hover { opacity:0.8; }
+
+/* ADD PRODUCT FORM */
+.add-product-form {
+  background:var(--orange-light); border:1.5px solid rgba(249,115,22,0.2);
+  border-radius:14px; padding:18px; margin-bottom:16px; display:none;
+}
+.add-product-form.visible { display:block; animation:fadeUp 0.3s ease; }
+
+/* IMAGE UPLOAD */
+.img-upload-area {
+  border:2px dashed var(--border); border-radius:10px;
+  padding:20px; text-align:center; cursor:pointer;
+  transition:border-color 0.2s, background 0.2s;
+  background:#fafafa;
+}
+.img-upload-area:hover { border-color:var(--orange); background:var(--orange-light); }
+.img-upload-area.has-img { border-color:var(--success); background:#f0fdf4; }
+.img-upload-icon { font-size:28px; margin-bottom:6px; }
+.img-upload-text { font-size:12px; color:var(--muted); font-weight:600; }
+.img-preview { width:80px; height:80px; object-fit:cover; border-radius:8px; margin-top:8px; display:none; }
+.img-url-input { margin-top:8px; }
+
+/* TOGGLE */
+.toggle-row { display:flex; align-items:center; justify-content:space-between; padding:12px 0; border-bottom:1px solid var(--border); }
+.toggle-row:last-child { border-bottom:none; }
+.toggle-label { font-size:13px; font-weight:600; }
+.toggle-desc { font-size:11px; color:var(--muted); margin-top:2px; }
+.toggle {
+  position:relative; width:44px; height:24px;
+  background:var(--border); border-radius:12px; cursor:pointer;
+  transition:background 0.3s; flex-shrink:0;
+}
+.toggle.on { background:var(--orange); }
+.toggle::after {
+  content:''; position:absolute; top:3px; left:3px;
+  width:18px; height:18px; background:#fff; border-radius:50%;
+  transition:transform 0.3s; box-shadow:0 1px 4px rgba(0,0,0,0.2);
+}
+.toggle.on::after { transform:translateX(20px); }
+
+/* SECTIONS */
+.section { display:none; }
+.section.active { display:block; animation:fadeUp 0.3s ease; }
+
+/* BANNER EDITOR */
+.banner-preview {
+  background:var(--black); color:#fff; padding:14px 16px;
+  border-radius:10px; margin-bottom:12px; font-size:13px; text-align:center;
+}
+.banner-preview span { color:var(--orange); font-weight:700; }
+
+/* AI MESSAGES */
+.ai-msg-item {
+  background:var(--bg); border:1px solid var(--border);
+  border-radius:10px; padding:14px; margin-bottom:10px;
+}
+.ai-msg-key { font-size:11px; font-weight:800; color:var(--orange); margin-bottom:5px; }
+
+/* COLORS */
+.color-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+.color-swatch { border-radius:10px; overflow:hidden; cursor:pointer; border:2px solid transparent; transition:border-color 0.2s; }
+.color-swatch.selected { border-color:var(--orange); }
+.color-box { height:50px; }
+.color-name { font-size:10px; font-weight:700; padding:5px; text-align:center; background:#fff; }
+
+@keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+/* MOBILE */
+.menu-toggle {
+  display:none; position:fixed; top:14px; left:14px; z-index:100;
+  background:var(--orange); color:#fff; border:none; border-radius:8px;
+  width:36px; height:36px; font-size:16px; cursor:pointer;
+}
+@media(max-width:640px) {
+  .sidebar { transform:translateX(-100%); }
+  .sidebar.open { transform:translateX(0); }
+  .main-content { margin-left:0; padding:60px 14px 20px; }
+  .menu-toggle { display:flex; align-items:center; justify-content:center; }
+  .stats-grid { grid-template-columns:1fr 1fr; }
+  .form-row-2 { grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo"><span>Sty</span>flake</div>
+    <div class="login-sub">Admin Panel — Secure Login</div>
+    <label class="login-label">Username</label>
+    <input class="login-input" type="text" id="loginUser" placeholder="admin"/>
+    <label class="login-label">Password</label>
+    <input class="login-input" type="password" id="loginPass" placeholder="••••••••"/>
+    <button class="login-btn" onclick="doLogin()">Login to Admin ✦</button>
+    <div class="login-error" id="loginError">❌ Wrong username or password!</div>
+  </div>
+</div>
+
+<!-- ADMIN WRAP -->
+<button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+
+<div class="admin-wrap" id="adminWrap">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <span>Sty</span>flake
+      <small>Admin Panel v1.0</small>
+    </div>
+    <div class="sidebar-nav">
+      <div class="nav-item active" onclick="showSection('dashboard',this)"><span class="ni">📊</span> Dashboard</div>
+      <div class="nav-item" onclick="showSection('products',this)"><span class="ni">🛍️</span> Products</div>
+      <div class="nav-item" onclick="showSection('banner',this)"><span class="ni">📢</span> Banner & Text</div>
+      <div class="nav-item" onclick="showSection('ai',this)"><span class="ni">🤖</span> AI Messages</div>
+      <div class="nav-item" onclick="showSection('settings',this)"><span class="ni">⚙️</span> Settings</div>
+      <div class="nav-item" onclick="showSection('preview',this)"><span class="ni">👁️</span> Preview Site</div>
+    </div>
+    <div class="sidebar-bottom">
+      <button class="logout-btn" onclick="doLogout()">🚪 Logout</button>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main-content">
+
+    <!-- DASHBOARD -->
+    <div class="section active" id="sec-dashboard">
+      <div class="topbar">
+        <h1>Dashboard <span>Overview</span></h1>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Total Products</div>
+          <div class="stat-value orange" id="statProducts">6</div>
+          <div class="stat-sub">On website</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">AI Searches Today</div>
+          <div class="stat-value">24</div>
+          <div class="stat-sub">Free users</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Premium Users</div>
+          <div class="stat-value green">0</div>
+          <div class="stat-sub">Rs.99/month</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Est. Revenue</div>
+          <div class="stat-value orange">₹0</div>
+          <div class="stat-sub">This month</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🚀 Quick Actions</div>
+        <div style="display:flex;flex-wrap:wrap;gap:10px;">
+          <button class="save-btn" onclick="showSection('products', document.querySelectorAll('.nav-item')[1])">+ Add Product</button>
+          <button class="save-btn" style="background:#111;" onclick="showSection('banner', document.querySelectorAll('.nav-item')[2])">✏️ Edit Banner</button>
+          <button class="save-btn" style="background:#111;" onclick="showSection('ai', document.querySelectorAll('.nav-item')[3])">🤖 Edit AI Text</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📋 Setup Checklist</div>
+        <div class="toggle-row">
+          <div><div class="toggle-label">✅ Website Design</div><div class="toggle-desc">Frontend ready</div></div>
+          <div class="toggle on"></div>
+        </div>
+        <div class="toggle-row">
+          <div><div class="toggle-label">⏳ Vercel Deployment</div><div class="toggle-desc">Website live karna hai</div></div>
+          <div class="toggle" onclick="this.classList.toggle('on')"></div>
+        </div>
+        <div class="toggle-row">
+          <div><div class="toggle-label">⏳ Nykaa Affiliate</div><div class="toggle-desc">Affiliate account banana hai</div></div>
+          <div class="toggle" onclick="this.classList.toggle('on')"></div>
+        </div>
+        <div class="toggle-row">
+          <div><div class="toggle-label">⏳ Myntra Affiliate</div><div class="toggle-desc">Affiliate account banana hai</div></div>
+          <div class="toggle" onclick="this.classList.toggle('on')"></div>
+        </div>
+        <div class="toggle-row">
+          <div><div class="toggle-label">⏳ Gemini AI</div><div class="toggle-desc">API key connect karna hai</div></div>
+          <div class="toggle" onclick="this.classList.toggle('on')"></div>
+        </div>
+        <div class="toggle-row">
+          <div><div class="toggle-label">⏳ Razorpay Payment</div><div class="toggle-desc">Premium payment setup</div></div>
+          <div class="toggle" onclick="this.classList.toggle('on')"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRODUCTS -->
+    <div class="section" id="sec-products">
+      <div class="topbar">
+        <h1>Manage <span>Products</span></h1>
+        <button class="save-btn" onclick="toggleAddForm()">+ Add New Product</button>
+      </div>
+
+      <!-- ADD FORM -->
+      <div class="add-product-form" id="addProductForm">
+        <div class="card-title">➕ <span>Add New Product</span></div>
+        <div class="form-row-2">
+          <div class="form-row">
+            <label class="form-label">Brand Name *</label>
+            <input class="form-input" id="newBrand" placeholder="e.g. MANGO"/>
+          </div>
+          <div class="form-row">
+            <label class="form-label">Product Name *</label>
+            <input class="form-input" id="newName" placeholder="e.g. Floral Wrap Dress"/>
+          </div>
+        </div>
+        <div class="form-row-2">
+          <div class="form-row">
+            <label class="form-label">Sale Price *</label>
+            <input class="form-input" id="newPrice" placeholder="e.g. 1299" type="number"/>
+          </div>
+          <div class="form-row">
+            <label class="form-label">Original Price *</label>
+            <input class="form-input" id="newOld" placeholder="e.g. 2499" type="number"/>
+          </div>
+        </div>
+        <div class="form-row-2">
+          <div class="form-row">
+            <label class="form-label">Platform</label>
+            <select class="form-select" id="newPlatform">
+              <option value="myntra">Myntra</option>
+              <option value="nykaa">Nykaa</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label class="form-label">Category</label>
+            <select class="form-select" id="newCategory">
+              <option>Women</option>
+              <option>Men</option>
+              <option>Ethnic</option>
+              <option>Footwear</option>
+              <option>Beauty</option>
+              <option>Trending</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Affiliate Link *</label>
+          <input class="form-input" id="newLink" placeholder="https://www.myntra.com/product-link"/>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Product Image URL</label>
+          <input class="form-input" id="newImg" placeholder="https://images.unsplash.com/..." oninput="previewImg(this.value)"/>
+          <div style="margin-top:8px;">
+            <img id="imgPreviewEl" class="img-preview" src="" alt="preview"/>
+          </div>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Available Sizes (comma separated)</label>
+          <input class="form-input" id="newSizes" placeholder="XS, S, M, L, XL"/>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:4px;">
+          <button class="save-btn" onclick="addProduct()">✅ Add Product</button>
+          <button class="save-btn" style="background:#888;" onclick="toggleAddForm()">Cancel</button>
+        </div>
+      </div>
+
+      <!-- PRODUCT LIST -->
+      <div class="product-list" id="productList"></div>
+    </div>
+
+    <!-- BANNER -->
+    <div class="section" id="sec-banner">
+      <div class="topbar">
+        <h1>Banner & <span>Text</span></h1>
+        <button class="save-btn" onclick="saveBanner()">💾 Save Changes</button>
+      </div>
+      <div class="card">
+        <div class="card-title">📢 <span>Announcement Bar</span></div>
+        <div class="banner-preview" id="bannerPreview">🔥 Free Shipping on orders above Rs.499 | <span>Use code STYFLAKE10</span> for 10% extra off</div>
+        <div class="form-row">
+          <label class="form-label">Announcement Text</label>
+          <input class="form-input" id="bannerText" value="🔥 Free Shipping on orders above Rs.499 | Use code STYFLAKE10 for 10% extra off" oninput="updateBannerPreview()"/>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Highlight Word (shown in orange)</label>
+          <input class="form-input" id="bannerHighlight" value="STYFLAKE10" oninput="updateBannerPreview()"/>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🦸 <span>Hero Section</span></div>
+        <div class="form-row">
+          <label class="form-label">Hero Title Line 1</label>
+          <input class="form-input" id="heroL1" value="FIND YOUR"/>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Hero Title Line 2 (Orange)</label>
+          <input class="form-input" id="heroL2" value="PERFECT"/>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Hero Title Line 3</label>
+          <input class="form-input" id="heroL3" value="STYLE."/>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Hero Subtitle</label>
+          <input class="form-input" id="heroSub" value="Best deals from Nykaa & Myntra — recommended by AI"/>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Search Placeholder Text</label>
+          <input class="form-input" id="searchPlaceholder" value="Try: Party dress under Rs.1500 size M..."/>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🏷️ <span>Sale Banner</span></div>
+        <div class="form-row">
+          <label class="form-label">Banner Title</label>
+          <input class="form-input" id="saleBannerTitle" value="END OF SEASON SALE"/>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Banner Subtitle</label>
+          <input class="form-input" id="saleBannerSub" value="Up to 70% off on 10,000+ styles"/>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Button Text</label>
+          <input class="form-input" id="saleBannerBtn" value="Shop Now →"/>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI MESSAGES -->
+    <div class="section" id="sec-ai">
+      <div class="topbar">
+        <h1>AI <span>Messages</span></h1>
+        <button class="save-btn" onclick="saveAI()">💾 Save Messages</button>
+      </div>
+      <div class="card">
+        <div class="card-title">🤖 <span>AI Response Messages</span></div>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:16px;">Yeh messages AI dikhata hai jab user search karta hai. <strong>Bold</strong> ke liye &lt;strong&gt;text&lt;/strong&gt; use karo.</p>
+
+        <div class="ai-msg-item">
+          <div class="ai-msg-key">🎉 PARTY / DRESS search pe</div>
+          <textarea class="form-textarea" id="aiParty">Found &lt;strong&gt;4 stunning party looks&lt;/strong&gt; for you! The MANGO Floral Dress is trending this week on Myntra. All picks are &lt;strong&gt;under your budget with 47%+ off!&lt;/strong&gt; 🎉</textarea>
+        </div>
+        <div class="ai-msg-item">
+          <div class="ai-msg-key">💼 OFFICE / FORMAL search pe</div>
+          <textarea class="form-textarea" id="aiOffice">Here are &lt;strong&gt;4 power office looks!&lt;/strong&gt; The AND Blazer Set is a bestseller this season. Stylish, professional, and all &lt;strong&gt;under Rs.2500!&lt;/strong&gt; 💼</textarea>
+        </div>
+        <div class="ai-msg-item">
+          <div class="ai-msg-key">💍 LEHENGA / WEDDING search pe</div>
+          <textarea class="form-textarea" id="aiLehenga">Shaadi ready! 💍 &lt;strong&gt;4 gorgeous lehengas&lt;/strong&gt; found — all under Rs.5000. LIBAS Bridal Lehenga has &lt;strong&gt;50% off today only.&lt;/strong&gt;</textarea>
+        </div>
+        <div class="ai-msg-item">
+          <div class="ai-msg-key">👟 SNEAKERS / SHOES search pe</div>
+          <textarea class="form-textarea" id="aiSneakers">Fresh kicks alert! 👟 &lt;strong&gt;4 top sneakers&lt;/strong&gt; for you. PUMA &amp; NIKE are most popular this week. All &lt;strong&gt;under Rs.3000!&lt;/strong&gt;</textarea>
+        </div>
+        <div class="ai-msg-item">
+          <div class="ai-msg-key">✨ SKINCARE / BEAUTY search pe</div>
+          <textarea class="form-textarea" id="aiSkincare">Glow time! ✨ &lt;strong&gt;4 must-have skincare picks&lt;/strong&gt; from Nykaa. MINIMALIST Vitamin C is India's #1 bestseller. All &lt;strong&gt;under Rs.700!&lt;/strong&gt;</textarea>
+        </div>
+        <div class="ai-msg-item">
+          <div class="ai-msg-key">🛍️ Default (baaki sab searches)</div>
+          <textarea class="form-textarea" id="aiDefault">Found &lt;strong&gt;4 amazing picks&lt;/strong&gt; for you from Nykaa &amp; Myntra! These are trending this week with &lt;strong&gt;44%+ discounts.&lt;/strong&gt; 🛍️</textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="section" id="sec-settings">
+      <div class="topbar">
+        <h1>Site <span>Settings</span></h1>
+        <button class="save-btn" onclick="saveSettings()">💾 Save Settings</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🔑 <span>API Keys</span></div>
+        <div class="form-row">
+          <label class="form-label">Gemini AI API Key</label>
+          <input class="form-input" type="password" id="geminiKey" placeholder="AIzaSy..."/>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Razorpay Key ID</label>
+          <input class="form-input" type="password" id="razorpayKey" placeholder="rzp_live_..."/>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Myntra Affiliate ID</label>
+          <input class="form-input" id="myntraAff" placeholder="Your affiliate ID"/>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Nykaa Affiliate ID</label>
+          <input class="form-input" id="nykaaAff" placeholder="Your affiliate ID"/>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">💰 <span>Pricing</span></div>
+        <div class="form-row-2">
+          <div class="form-row">
+            <label class="form-label">Premium Monthly Price (Rs.)</label>
+            <input class="form-input" type="number" id="priceMonthly" value="99"/>
+          </div>
+          <div class="form-row">
+            <label class="form-label">Premium Annual Price (Rs.)</label>
+            <input class="form-input" type="number" id="priceAnnual" value="799"/>
+          </div>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Free Plan Daily Search Limit</label>
+          <input class="form-input" type="number" id="freeLimit" value="2"/>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">⚙️ <span>Features Toggle</span></div>
+        <div class="toggle-row">
+          <div><div class="toggle-label">Ads on Free Plan</div><div class="toggle-desc">Free users ko ads dikhao</div></div>
+          <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+        </div>
+        <div class="toggle-row">
+          <div><div class="toggle-label">Wishlist Feature</div><div class="toggle-desc">Users products save kar sakein</div></div>
+          <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+        </div>
+        <div class="toggle-row">
+          <div><div class="toggle-label">Premium Modal Auto Show</div><div class="toggle-desc">2 searches ke baad modal dikhao</div></div>
+          <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+        </div>
+        <div class="toggle-row">
+          <div><div class="toggle-label">Maintenance Mode</div><div class="toggle-desc">Site temporarily band karo</div></div>
+          <div class="toggle" onclick="this.classList.toggle('on')"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🔐 <span>Change Admin Password</span></div>
+        <div class="form-row">
+          <label class="form-label">New Password</label>
+          <input class="form-input" type="password" id="newPass" placeholder="New password"/>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Confirm Password</label>
+          <input class="form-input" type="password" id="confirmPass" placeholder="Confirm password"/>
+        </div>
+        <button class="save-btn" onclick="changePass()">🔐 Update Password</button>
+      </div>
+    </div>
+
+    <!-- PREVIEW -->
+    <div class="section" id="sec-preview">
+      <div class="topbar">
+        <h1>Site <span>Preview</span></h1>
+        <a href="styflake_v2.html" target="_blank"><button class="save-btn">🌐 Open Full Site</button></a>
+      </div>
+      <div class="card">
+        <div class="card-title">👁️ <span>Live Preview</span></div>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:14px;">Apni website ka live preview dekho</p>
+        <iframe src="styflake_v2.html" style="width:100%;height:500px;border:none;border-radius:10px;border:1px solid var(--border);" title="Styflake Preview"></iframe>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><span class="tick">✅</span> <span id="toastMsg">Saved!</span></div>
+
+<script>
+// ── DEFAULT PRODUCTS
+let products = [
+  { id:1, brand:"MANGO", name:"Floral Wrap Midi Dress", price:1199, old:2499, platform:"myntra", category:"Women", img:"https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=400&q=80", link:"#", sizes:"XS,S,M,L" },
+  { id:2, brand:"H&M", name:"Cotton Ribbed Crop Top", price:499, old:899, platform:"nykaa", category:"Women", img:"https://images.unsplash.com/photo-1520975954732-35dd22299614?w=400&q=80", link:"#", sizes:"S,M,L,XL" },
+  { id:3, brand:"AURELIA", name:"Printed A-Line Kurti", price:799, old:1499, platform:"myntra", category:"Ethnic", img:"https://images.unsplash.com/photo-1594938298603-c8148c4b4063?w=400&q=80", link:"#", sizes:"S,M,L" },
+  { id:4, brand:"PUMA", name:"Softride Running Shoes", price:1499, old:2499, platform:"myntra", category:"Footwear", img:"https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&q=80", link:"#", sizes:"6,7,8,9" },
+  { id:5, brand:"MINIMALIST", name:"Vitamin C 10% Serum", price:569, old:999, platform:"nykaa", category:"Beauty", img:"https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400&q=80", link:"#", sizes:"" },
+  { id:6, brand:"JACK & JONES", name:"Slim Fit Denim Jacket", price:1349, old:2999, platform:"myntra", category:"Men", img:"https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=400&q=80", link:"#", sizes:"S,M,L,XL" },
+];
+
+let adminPass = "styflake2025";
+
+// ── LOGIN
+function doLogin() {
+  const u = document.getElementById('loginUser').value;
+  const p = document.getElementById('loginPass').value;
+  if (u === "admin" && p === adminPass) {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('adminWrap').className = 'admin-wrap visible';
+    renderProducts();
+  } else {
+    document.getElementById('loginError').style.display = 'block';
+  }
+}
+document.addEventListener('keypress', e => { if(e.key==='Enter') doLogin(); });
+
+function doLogout() {
+  document.getElementById('adminWrap').className = 'admin-wrap';
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('loginUser').value = '';
+  document.getElementById('loginPass').value = '';
+}
+
+// ── NAVIGATION
+function showSection(name, el) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('sec-'+name).classList.add('active');
+  if(el) el.classList.add('active');
+  if(window.innerWidth < 640) document.getElementById('sidebar').classList.remove('open');
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+}
+
+// ── PRODUCTS
+function renderProducts() {
+  const list = document.getElementById('productList');
+  list.innerHTML = '';
+  document.getElementById('statProducts').textContent = products.length;
+  products.forEach(p => {
+    const off = Math.round((1 - p.price/p.old)*100);
+    const ptClass = p.platform === 'myntra' ? 'pt-m' : 'pt-n';
+    const ptName  = p.platform === 'myntra' ? 'Myntra' : 'Nykaa';
+    const div = document.createElement('div');
+    div.className = 'product-item';
+    div.innerHTML = `
+      <div class="product-item-img">
+        ${p.img ? `<img src="${p.img}" alt="${p.name}" onerror="this.style.display='none'"/>` : '🛍️'}
+      </div>
+      <div class="product-item-info">
+        <div class="product-item-brand">${p.brand} <span class="product-item-platform ${ptClass}">${ptName}</span></div>
+        <div class="product-item-name">${p.name}</div>
+        <div class="product-item-price">₹${p.price.toLocaleString()} <span style="color:#aaa;text-decoration:line-through;font-size:11px;">₹${p.old.toLocaleString()}</span> <span style="color:#16a34a;font-size:10px;">${off}% off</span></div>
+      </div>
+      <div class="product-item-actions">
+        <button class="btn-edit" onclick="editProduct(${p.id})">✏️ Edit</button>
+        <button class="btn-del"  onclick="deleteProduct(${p.id})">🗑️</button>
+      </div>
+    `;
+    list.appendChild(div);
+  });
+}
+
+function toggleAddForm() {
+  const f = document.getElementById('addProductForm');
+  f.classList.toggle('visible');
+}
+
+function previewImg(url) {
+  const img = document.getElementById('imgPreviewEl');
+  if(url) { img.src = url; img.style.display = 'block'; }
+  else img.style.display = 'none';
+}
+
+function addProduct() {
+  const brand = document.getElementById('newBrand').value.trim();
+  const name  = document.getElementById('newName').value.trim();
+  const price = parseInt(document.getElementById('newPrice').value);
+  const old   = parseInt(document.getElementById('newOld').value);
+  const platform = document.getElementById('newPlatform').value;
+  const category = document.getElementById('newCategory').value;
+  const link  = document.getElementById('newLink').value.trim();
+  const img   = document.getElementById('newImg').value.trim();
+  const sizes = document.getElementById('newSizes').value.trim();
+
+  if(!brand || !name || !price || !old) { showToast('❌ Brand, name, prices zaroori hain!'); return; }
+
+  const newId = products.length ? Math.max(...products.map(p=>p.id))+1 : 1;
+  products.push({ id:newId, brand, name, price, old, platform, category, link, img, sizes });
+  renderProducts();
+  toggleAddForm();
+  ['newBrand','newName','newPrice','newOld','newLink','newImg','newSizes'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('imgPreviewEl').style.display = 'none';
+  showToast('✅ Product added!');
+}
+
+function deleteProduct(id) {
+  if(!confirm('Delete this product?')) return;
+  products = products.filter(p => p.id !== id);
+  renderProducts();
+  showToast('🗑️ Product deleted!');
+}
+
+function editProduct(id) {
+  const p = products.find(x => x.id === id);
+  if(!p) return;
+  document.getElementById('addProductForm').classList.add('visible');
+  document.getElementById('newBrand').value = p.brand;
+  document.getElementById('newName').value  = p.name;
+  document.getElementById('newPrice').value = p.price;
+  document.getElementById('newOld').value   = p.old;
+  document.getElementById('newPlatform').value = p.platform;
+  document.getElementById('newCategory').value = p.category;
+  document.getElementById('newLink').value  = p.link;
+  document.getElementById('newImg').value   = p.img;
+  document.getElementById('newSizes').value = p.sizes;
+  previewImg(p.img);
+  deleteProduct(id);
+  document.getElementById('addProductForm').scrollIntoView({behavior:'smooth'});
+}
+
+// ── BANNER
+function updateBannerPreview() {
+  const text = document.getElementById('bannerText').value;
+  const hl   = document.getElementById('bannerHighlight').value;
+  const highlighted = text.replace(hl, `<span>${hl}</span>`);
+  document.getElementById('bannerPreview').innerHTML = highlighted;
+}
+
+function saveBanner() { showToast('✅ Banner saved!'); }
+function saveAI()     { showToast('✅ AI messages saved!'); }
+function saveSettings(){ showToast('✅ Settings saved!'); }
+
+function changePass() {
+  const np = document.getElementById('newPass').value;
+  const cp = document.getElementById('confirmPass').value;
+  if(!np) { showToast('❌ Password khali hai!'); return; }
+  if(np !== cp) { showToast('❌ Passwords match nahi karte!'); return; }
+  adminPass = np;
+  document.getElementById('newPass').value = '';
+  document.getElementById('confirmPass').value = '';
+  showToast('✅ Password updated!');
+}
+
+// ── TOAST
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+</script>
+</body>
+</html>

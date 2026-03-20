@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Styflake — Your Style, Our AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --orange: #F97316;
+  --orange-light: #FFF7ED;
+  --orange-mid: #FFEDD5;
+  --orange-dim: rgba(249,115,22,0.1);
+  --black: #111111;
+  --text: #1a1a1a;
+  --muted: #666666;
+  --light: #f5f5f5;
+  --border: #e8e8e8;
+  --white: #ffffff;
+  --card-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  --card-shadow-hover: 0 8px 32px rgba(0,0,0,0.14);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body { font-family:'DM Sans',sans-serif; background:#fff; color:var(--text); overflow-x:hidden; }
+
+/* ═══════════════════════════════
+   ANNOUNCEMENT BAR
+═══════════════════════════════ */
+.announce-bar {
+  background: var(--black);
+  color: #fff;
+  text-align: center;
+  font-size: 12px;
+  padding: 8px 16px;
+  letter-spacing: 0.3px;
+}
+.announce-bar span { color: var(--orange); font-weight: 700; }
+
+/* ═══════════════════════════════
+   NAVBAR
+═══════════════════════════════ */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  background: #fff;
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+.nav-top {
+  display: flex; align-items: center;
+  padding: 0 20px; height: 60px; gap: 16px;
+}
+.nav-logo { display:flex; align-items:center; gap:8px; text-decoration:none; flex-shrink:0; }
+.nav-logo-text { font-family:'Bebas Neue',sans-serif; font-size:26px; letter-spacing:1px; color:var(--black); }
+.nav-logo-text span { color:var(--orange); }
+
+.nav-search {
+  flex:1; display:flex; align-items:center;
+  background: var(--light); border:1.5px solid var(--border);
+  border-radius:8px; padding:0 14px; gap:8px; height:40px;
+  transition: border-color 0.2s;
+}
+.nav-search:focus-within { border-color:var(--orange); background:#fff; }
+.nav-search input { flex:1; border:none; background:none; outline:none; font-family:'DM Sans',sans-serif; font-size:13px; color:var(--text); }
+.nav-search input::placeholder { color:#aaa; }
+.nav-search-icon { color:#aaa; font-size:15px; }
+
+.nav-actions { display:flex; align-items:center; gap:8px; flex-shrink:0; }
+.nav-icon-btn {
+  display:flex; flex-direction:column; align-items:center;
+  gap:2px; padding:6px 10px; cursor:pointer;
+  border:none; background:none; color:var(--muted);
+  font-size:10px; font-weight:600; transition:color 0.2s;
+  text-decoration:none;
+}
+.nav-icon-btn:hover { color:var(--orange); }
+.nav-icon-btn .icon { font-size:18px; }
+.btn-premium-nav {
+  background:var(--orange); color:#fff;
+  font-size:11px; font-weight:800;
+  padding:8px 14px; border-radius:8px;
+  border:none; cursor:pointer; white-space:nowrap;
+  transition:opacity 0.15s, transform 0.15s;
+}
+.btn-premium-nav:hover { opacity:0.9; transform:scale(1.03); }
+
+.nav-cats {
+  display:flex; align-items:center; gap:0;
+  padding:0 20px;
+  border-top:1px solid var(--border);
+  overflow-x:auto; scrollbar-width:none;
+}
+.nav-cats::-webkit-scrollbar { display:none; }
+.nav-cat {
+  padding:10px 16px; font-size:13px; font-weight:600;
+  color:var(--muted); cursor:pointer; white-space:nowrap;
+  border-bottom:2px solid transparent;
+  transition:all 0.2s;
+}
+.nav-cat:hover, .nav-cat.active { color:var(--orange); border-bottom-color:var(--orange); }
+
+/* ═══════════════════════════════
+   HERO
+═══════════════════════════════ */
+.hero {
+  background: linear-gradient(135deg, #fff 0%, #FFF7ED 60%, #FFEDD5 100%);
+  padding: 48px 20px 40px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content:'';
+  position:absolute; top:-60px; right:-60px;
+  width:300px; height:300px;
+  background:radial-gradient(circle, rgba(249,115,22,0.12) 0%, transparent 70%);
+  border-radius:50%;
+}
+.hero::after {
+  content:'';
+  position:absolute; bottom:-80px; left:-80px;
+  width:350px; height:350px;
+  background:radial-gradient(circle, rgba(249,115,22,0.08) 0%, transparent 70%);
+  border-radius:50%;
+}
+.hero-inner { position:relative; z-index:1; max-width:600px; margin:0 auto; }
+.hero-badge {
+  display:inline-flex; align-items:center; gap:6px;
+  background:#fff; border:1px solid var(--border);
+  font-size:11px; font-weight:700; color:var(--muted);
+  padding:5px 12px; border-radius:20px; margin-bottom:16px;
+  box-shadow: var(--card-shadow);
+}
+.hero-badge .dot { width:6px; height:6px; background:var(--orange); border-radius:50%; animation:pulse 1.5s infinite; }
+.hero-title {
+  font-family:'Bebas Neue',sans-serif;
+  font-size: clamp(44px, 12vw, 72px);
+  line-height:0.95; letter-spacing:1px;
+  margin-bottom:12px;
+  animation: fadeUp 0.6s ease both;
+}
+.hero-title .o { color:var(--orange); }
+.hero-sub { font-size:15px; color:var(--muted); margin-bottom:28px; animation:fadeUp 0.6s 0.1s ease both; }
+
+/* Hero Search */
+.hero-search-wrap { animation:fadeUp 0.6s 0.2s ease both; }
+.hero-search-box {
+  display:flex; align-items:center;
+  background:#fff; border:2px solid var(--orange);
+  border-radius:12px; padding:5px 5px 5px 18px;
+  box-shadow:0 4px 24px rgba(249,115,22,0.15);
+  gap:10px; margin-bottom:14px;
+}
+.hero-search-box input {
+  flex:1; border:none; outline:none;
+  font-family:'DM Sans',sans-serif; font-size:14px; color:var(--text);
+  padding:10px 0;
+}
+.hero-search-box input::placeholder { color:#bbb; }
+.btn-find {
+  background:var(--orange); color:#fff;
+  font-size:13px; font-weight:800;
+  padding:12px 22px; border-radius:8px;
+  border:none; cursor:pointer; white-space:nowrap;
+  transition:transform 0.15s, opacity 0.15s;
+}
+.btn-find:hover { transform:scale(1.04); opacity:0.95; }
+
+.search-tags { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; }
+.stag {
+  background:#fff; border:1px solid var(--border);
+  color:var(--muted); font-size:11px; font-weight:600;
+  padding:6px 13px; border-radius:20px; cursor:pointer;
+  transition:all 0.2s; box-shadow:0 1px 4px rgba(0,0,0,0.06);
+}
+.stag:hover { border-color:var(--orange); color:var(--orange); transform:translateY(-1px); }
+
+/* ═══════════════════════════════
+   SECTION HEADERS
+═══════════════════════════════ */
+.section-head {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:24px 20px 14px;
+}
+.section-head h2 { font-family:'Bebas Neue',sans-serif; font-size:24px; letter-spacing:0.5px; }
+.section-head h2 span { color:var(--orange); }
+.see-all { font-size:12px; font-weight:700; color:var(--orange); cursor:pointer; text-decoration:none; }
+
+/* ═══════════════════════════════
+   FILTER BAR
+═══════════════════════════════ */
+.filter-bar {
+  display:flex; gap:8px; padding:0 20px 16px;
+  overflow-x:auto; scrollbar-width:none;
+}
+.filter-bar::-webkit-scrollbar { display:none; }
+.filter-chip {
+  display:flex; align-items:center; gap:5px;
+  background:#fff; border:1px solid var(--border);
+  font-size:12px; font-weight:600; color:var(--muted);
+  padding:6px 13px; border-radius:20px; cursor:pointer;
+  white-space:nowrap; transition:all 0.2s;
+  box-shadow:0 1px 4px rgba(0,0,0,0.05);
+}
+.filter-chip:hover, .filter-chip.active { border-color:var(--orange); color:var(--orange); background:var(--orange-light); }
+.filter-chip .arrow { font-size:10px; }
+
+/* ═══════════════════════════════
+   PRODUCTS GRID — MYNTRA STYLE
+═══════════════════════════════ */
+.products-grid {
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:1px; background:var(--border);
+  margin:0;
+}
+
+.product-card {
+  background:#fff; cursor:pointer;
+  transition:box-shadow 0.2s;
+  text-decoration:none; color:inherit;
+  display:block; position:relative;
+}
+.product-card:hover { z-index:2; box-shadow:var(--card-shadow-hover); }
+
+.product-img-wrap {
+  position:relative; overflow:hidden;
+  background:var(--light);
+  aspect-ratio: 3/4;
+}
+.product-img-wrap img {
+  width:100%; height:100%; object-fit:cover;
+  transition:transform 0.4s ease;
+}
+.product-card:hover .product-img-wrap img { transform:scale(1.05); }
+
+.product-wish {
+  position:absolute; top:10px; right:10px;
+  width:32px; height:32px; border-radius:50%;
+  background:rgba(255,255,255,0.9);
+  display:flex; align-items:center; justify-content:center;
+  font-size:15px; cursor:pointer; z-index:2;
+  box-shadow:0 2px 8px rgba(0,0,0,0.12);
+  transition:transform 0.2s, background 0.2s;
+  border:none;
+}
+.product-wish:hover { transform:scale(1.1); }
+.product-wish.liked { background:#fff0f0; }
+
+.product-discount {
+  position:absolute; top:10px; left:10px;
+  background:var(--orange); color:#fff;
+  font-size:9px; font-weight:800;
+  padding:3px 7px; border-radius:4px; z-index:2;
+}
+.platform-tag {
+  position:absolute; bottom:8px; left:8px;
+  font-size:9px; font-weight:700;
+  padding:3px 7px; border-radius:4px; z-index:2;
+}
+.pt-myntra { background:rgba(255,63,108,0.15); color:#ff3f6c; }
+.pt-nykaa  { background:rgba(252,100,113,0.15); color:#e75480; }
+
+.product-info { padding:10px 10px 14px; }
+.product-brand { font-size:12px; font-weight:800; color:var(--text); margin-bottom:2px; }
+.product-name  { font-size:11px; color:var(--muted); margin-bottom:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.product-price-row { display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+.product-price { font-size:13px; font-weight:800; color:var(--text); }
+.product-old   { font-size:11px; color:#aaa; text-decoration:line-through; }
+.product-off   { font-size:11px; font-weight:700; color:#26a541; }
+
+.product-sizes { display:flex; gap:4px; margin-top:7px; }
+.psize {
+  font-size:9px; font-weight:700; color:var(--muted);
+  border:1px solid var(--border); border-radius:3px;
+  padding:2px 5px;
+}
+
+/* ═══════════════════════════════
+   BANNER STRIP
+═══════════════════════════════ */
+.banner-strip {
+  background:var(--black); color:#fff;
+  padding:20px; margin:20px 0;
+  display:flex; align-items:center; justify-content:space-between;
+}
+.banner-strip h3 { font-family:'Bebas Neue',sans-serif; font-size:22px; }
+.banner-strip h3 span { color:var(--orange); }
+.banner-strip p { font-size:12px; color:#aaa; margin-top:2px; }
+.btn-banner {
+  background:var(--orange); color:#fff;
+  font-size:12px; font-weight:800;
+  padding:10px 18px; border-radius:8px;
+  border:none; cursor:pointer; white-space:nowrap;
+  flex-shrink:0;
+}
+
+/* ═══════════════════════════════
+   AI SECTION
+═══════════════════════════════ */
+.ai-section {
+  background:linear-gradient(135deg, var(--black) 0%, #1a0a00 100%);
+  padding:48px 20px; text-align:center;
+  position:relative; overflow:hidden;
+}
+.ai-section::before {
+  content:'';
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  width:400px; height:400px;
+  background:radial-gradient(circle, rgba(249,115,22,0.12) 0%, transparent 70%);
+  border-radius:50%; pointer-events:none;
+}
+.ai-inner { position:relative; z-index:1; max-width:560px; margin:0 auto; }
+.ai-badge {
+  display:inline-flex; align-items:center; gap:6px;
+  background:rgba(249,115,22,0.15); border:1px solid rgba(249,115,22,0.3);
+  color:var(--orange); font-size:11px; font-weight:700;
+  padding:5px 14px; border-radius:20px; margin-bottom:16px;
+}
+.ai-title { font-family:'Bebas Neue',sans-serif; font-size:clamp(32px,8vw,52px); color:#fff; letter-spacing:1px; line-height:1; margin-bottom:10px; }
+.ai-title span { color:var(--orange); }
+.ai-sub { font-size:13px; color:#888; margin-bottom:24px; }
+
+.ai-search-box {
+  display:flex; align-items:center;
+  background:rgba(255,255,255,0.08); border:1.5px solid rgba(249,115,22,0.4);
+  border-radius:12px; padding:5px 5px 5px 16px; gap:10px;
+  margin-bottom:14px;
+}
+.ai-search-box input {
+  flex:1; border:none; background:none; outline:none;
+  font-family:'DM Sans',sans-serif; font-size:13px; color:#fff;
+  padding:10px 0;
+}
+.ai-search-box input::placeholder { color:#555; }
+.btn-ai-find {
+  background:var(--orange); color:#fff;
+  font-size:12px; font-weight:800;
+  padding:12px 18px; border-radius:8px;
+  border:none; cursor:pointer; white-space:nowrap;
+  transition:transform 0.15s;
+}
+.btn-ai-find:hover { transform:scale(1.04); }
+
+.ai-chips { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; }
+.ai-chip {
+  background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.1);
+  color:#aaa; font-size:11px; font-weight:600;
+  padding:6px 13px; border-radius:20px; cursor:pointer;
+  transition:all 0.2s;
+}
+.ai-chip:hover { border-color:var(--orange); color:var(--orange); background:rgba(249,115,22,0.1); }
+
+/* AI Results */
+.ai-results {
+  margin-top:28px; display:none;
+  animation:fadeUp 0.5s ease;
+}
+.ai-results.visible { display:block; }
+
+.ai-thinking-row {
+  display:flex; align-items:center; gap:10px; justify-content:center;
+  background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08);
+  border-radius:12px; padding:14px 18px; margin-bottom:14px;
+}
+.tdot { width:7px; height:7px; border-radius:50%; background:var(--orange); animation:bounce 1s infinite; }
+.tdot:nth-child(2) { animation-delay:0.15s; }
+.tdot:nth-child(3) { animation-delay:0.3s; }
+.ai-thinking-text { font-size:13px; color:#888; }
+
+.ai-response-box {
+  background:rgba(255,255,255,0.05); border:1px solid rgba(249,115,22,0.2);
+  border-left:3px solid var(--orange);
+  border-radius:12px; padding:14px 16px; margin-bottom:16px;
+  font-size:13px; color:#ccc; line-height:1.7; text-align:left;
+  display:none;
+}
+.ai-response-box.visible { display:block; animation:fadeUp 0.4s ease; }
+.ai-response-box strong { color:var(--orange); }
+
+.ai-products-row {
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+.ai-product-card {
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:14px; overflow:hidden;
+  cursor:pointer; transition:all 0.2s;
+  text-decoration:none; color:inherit;
+  display:block; text-align:left;
+}
+.ai-product-card:hover { border-color:var(--orange); transform:translateY(-3px); box-shadow:0 8px 24px rgba(249,115,22,0.15); }
+.ai-prod-img {
+  aspect-ratio:4/3; overflow:hidden;
+}
+.ai-prod-img img { width:100%; height:100%; object-fit:cover; }
+.ai-prod-info { padding:10px 12px 12px; }
+.ai-prod-brand { font-size:11px; font-weight:800; color:#fff; margin-bottom:2px; }
+.ai-prod-name  { font-size:10px; color:#888; margin-bottom:6px; }
+.ai-prod-price { font-size:13px; font-weight:800; color:var(--orange); }
+.ai-prod-old   { font-size:10px; color:#555; text-decoration:line-through; margin-left:4px; }
+.ai-prod-tag   { display:inline-block; margin-top:5px; background:rgba(249,115,22,0.15); color:var(--orange); font-size:9px; font-weight:700; padding:2px 7px; border-radius:6px; }
+
+/* Search limit */
+.ai-limit-msg {
+  background:rgba(249,115,22,0.1); border:1px solid rgba(249,115,22,0.25);
+  border-radius:10px; padding:12px 16px; margin-top:12px; display:none;
+  font-size:12px; color:var(--orange); font-weight:600;
+}
+
+/* ═══════════════════════════════
+   TRENDING BANNER
+═══════════════════════════════ */
+.trending-scroll {
+  display:flex; gap:12px; padding:0 20px 20px;
+  overflow-x:auto; scrollbar-width:none;
+}
+.trending-scroll::-webkit-scrollbar { display:none; }
+.trend-card {
+  flex-shrink:0; width:130px; border-radius:14px; overflow:hidden;
+  position:relative; cursor:pointer;
+  box-shadow:var(--card-shadow);
+  transition:transform 0.2s, box-shadow 0.2s;
+}
+.trend-card:hover { transform:translateY(-3px); box-shadow:var(--card-shadow-hover); }
+.trend-card img { width:100%; height:170px; object-fit:cover; }
+.trend-card-label {
+  position:absolute; bottom:0; left:0; right:0;
+  background:linear-gradient(transparent, rgba(0,0,0,0.75));
+  padding:20px 10px 10px;
+  font-size:12px; font-weight:700; color:#fff;
+}
+
+/* ═══════════════════════════════
+   PREMIUM SECTION
+═══════════════════════════════ */
+.premium-section {
+  background:var(--orange-light); border-top:1px solid var(--orange-mid);
+  border-bottom:1px solid var(--orange-mid);
+  padding:28px 20px; text-align:center;
+}
+.premium-section h3 { font-family:'Bebas Neue',sans-serif; font-size:26px; margin-bottom:6px; }
+.premium-section h3 span { color:var(--orange); }
+.premium-section p { font-size:13px; color:var(--muted); margin-bottom:16px; }
+.premium-features { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-bottom:20px; }
+.pfeat {
+  display:flex; align-items:center; gap:5px;
+  background:#fff; border:1px solid var(--border);
+  font-size:11px; font-weight:600; color:var(--text);
+  padding:6px 12px; border-radius:20px;
+  box-shadow:0 1px 4px rgba(0,0,0,0.05);
+}
+.pfeat .tick { color:var(--orange); font-weight:800; }
+.btn-upgrade-main {
+  background:var(--orange); color:#fff;
+  font-size:14px; font-weight:800;
+  padding:14px 32px; border-radius:10px;
+  border:none; cursor:pointer;
+  transition:transform 0.15s, opacity 0.15s;
+  box-shadow:0 4px 16px rgba(249,115,22,0.3);
+}
+.btn-upgrade-main:hover { transform:translateY(-2px); opacity:0.95; }
+.premium-note { font-size:11px; color:#aaa; margin-top:10px; }
+
+/* ═══════════════════════════════
+   PREMIUM MODAL
+═══════════════════════════════ */
+.modal-overlay {
+  position:fixed; inset:0; z-index:200;
+  background:rgba(0,0,0,0.6); backdrop-filter:blur(6px);
+  display:none; align-items:flex-end; justify-content:center;
+  padding:0;
+}
+.modal-overlay.visible { display:flex; }
+.modal {
+  background:#fff; border-radius:24px 24px 0 0;
+  padding:28px 24px 40px; width:100%; max-width:480px;
+  animation:slideUp 0.35s ease;
+  position:relative;
+}
+.modal-handle { width:40px; height:4px; background:var(--border); border-radius:2px; margin:0 auto 20px; }
+.modal-close { position:absolute; top:16px; right:16px; background:var(--light); border:none; width:30px; height:30px; border-radius:50%; cursor:pointer; font-size:14px; color:var(--muted); display:flex; align-items:center; justify-content:center; }
+.modal-title { font-family:'Bebas Neue',sans-serif; font-size:28px; margin-bottom:4px; }
+.modal-title span { color:var(--orange); }
+.modal-sub { font-size:13px; color:var(--muted); margin-bottom:20px; }
+.plan-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:20px; }
+.plan-box { background:var(--light); border:2px solid var(--border); border-radius:16px; padding:16px 14px; }
+.plan-box.best { border-color:var(--orange); background:var(--orange-light); }
+.plan-box-name { font-size:10px; font-weight:800; color:var(--muted); letter-spacing:1px; margin-bottom:6px; }
+.plan-box.best .plan-box-name { color:var(--orange); }
+.plan-box-price { font-size:24px; font-weight:900; margin-bottom:8px; }
+.plan-box-price sub { font-size:12px; font-weight:500; color:var(--muted); }
+.pf { font-size:11px; color:var(--muted); display:flex; align-items:center; gap:5px; margin-bottom:3px; }
+.pf .y { color:var(--orange); font-weight:800; }
+.pf .n { color:#ccc; }
+.btn-go {
+  width:100%; background:var(--orange); color:#fff;
+  font-size:14px; font-weight:800; padding:14px;
+  border-radius:12px; border:none; cursor:pointer; margin-bottom:10px;
+  transition:opacity 0.15s;
+}
+.btn-go:hover { opacity:0.9; }
+.modal-annual { text-align:center; font-size:12px; color:var(--muted); }
+.modal-annual span { color:var(--orange); font-weight:700; cursor:pointer; }
+.modal-fine { font-size:11px; color:#bbb; text-align:center; margin-top:8px; }
+
+/* ═══════════════════════════════
+   FOOTER
+═══════════════════════════════ */
+footer {
+  background:var(--black); color:#888; padding:32px 20px;
+  text-align:center;
+}
+.footer-logo { font-family:'Bebas Neue',sans-serif; font-size:28px; color:#fff; margin-bottom:8px; }
+.footer-logo span { color:var(--orange); }
+.footer-tagline { font-size:12px; margin-bottom:16px; }
+.footer-links { display:flex; flex-wrap:wrap; gap:16px; justify-content:center; margin-bottom:16px; }
+.footer-links a { font-size:12px; color:#888; text-decoration:none; }
+.footer-links a:hover { color:var(--orange); }
+.footer-bottom { font-size:11px; color:#444; }
+.footer-bottom span { color:var(--orange); }
+
+/* ═══════════════════════════════
+   ANIMATIONS
+═══════════════════════════════ */
+@keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+@keyframes bounce  { 0%,80%,100%{transform:translateY(0)} 40%{transform:translateY(-6px)} }
+@keyframes pulse   { 0%,100%{opacity:1} 50%{opacity:0.4} }
+@keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+
+.fade-in { opacity:0; transform:translateY(20px); transition:opacity 0.6s ease, transform 0.6s ease; }
+.fade-in.visible { opacity:1; transform:translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- ANNOUNCE -->
+<div class="announce-bar">🔥 Free Shipping on orders above Rs.499 &nbsp;|&nbsp; <span>Use code STYFLAKE10</span> for 10% extra off</div>
+
+<!-- NAVBAR -->
+<nav>
+  <div class="nav-top">
+    <a class="nav-logo" href="#">
+      <svg width="28" height="28" viewBox="0 0 52 52" fill="none">
+        <rect width="52" height="52" rx="14" fill="#F97316"/>
+        <path d="M34 16C34 16 28 14 22 17C17 20 18 25 24 27C30 29 34 31 32 36C30 40 24 38 18 36" stroke="black" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+        <circle cx="34" cy="16" r="2.5" fill="black"/>
+        <circle cx="18" cy="36" r="2.5" fill="black"/>
+      </svg>
+      <div class="nav-logo-text"><span>Sty</span>flake</div>
+    </a>
+    <div class="nav-search">
+      <span class="nav-search-icon">🔍</span>
+      <input type="text" placeholder="Search for clothes, brands, styles..."/>
+    </div>
+    <div class="nav-actions">
+      <button class="nav-icon-btn"><span class="icon">🤍</span>Wishlist</button>
+      <button class="nav-icon-btn"><span class="icon">👤</span>Profile</button>
+      <button class="btn-premium-nav" onclick="showModal()">⚡ Premium</button>
+    </div>
+  </div>
+  <div class="nav-cats">
+    <div class="nav-cat active" onclick="setActive(this)">All</div>
+    <div class="nav-cat" onclick="setActive(this)">Women</div>
+    <div class="nav-cat" onclick="setActive(this)">Men</div>
+    <div class="nav-cat" onclick="setActive(this)">Trending</div>
+    <div class="nav-cat" onclick="setActive(this)">Ethnic</div>
+    <div class="nav-cat" onclick="setActive(this)">Western</div>
+    <div class="nav-cat" onclick="setActive(this)">Beauty</div>
+    <div class="nav-cat" onclick="setActive(this)">Footwear</div>
+    <div class="nav-cat" onclick="setActive(this)">Explore</div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge"><div class="dot"></div> AI Powered Fashion Deals</div>
+    <h1 class="hero-title">FIND YOUR<br><span class="o">PERFECT</span><br>STYLE.</h1>
+    <p class="hero-sub">Best deals from Nykaa & Myntra — recommended by AI</p>
+    <div class="hero-search-wrap">
+      <div class="hero-search-box">
+        <input type="text" id="heroInput" placeholder="Try: Party dress under Rs.1500 size M..."/>
+        <button class="btn-find" onclick="scrollToAI()">Ask AI ✦</button>
+      </div>
+      <div class="search-tags">
+        <div class="stag" onclick="quickSearch('Party dress under Rs.1500')">🎉 Party Dress</div>
+        <div class="stag" onclick="quickSearch('Office wear for women under Rs.2000')">💼 Office Wear</div>
+        <div class="stag" onclick="quickSearch('Wedding lehenga under Rs.5000')">💍 Wedding</div>
+        <div class="stag" onclick="quickSearch('Trendy sneakers under Rs.3000')">👟 Sneakers</div>
+        <div class="stag" onclick="quickSearch('Skincare routine under Rs.1500')">✨ Skincare</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TRENDING NOW -->
+<div class="section-head fade-in">
+  <h2>Trending <span>Now</span></h2>
+  <a class="see-all">See all →</a>
+</div>
+<div class="trending-scroll fade-in">
+  <div class="trend-card"><img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=300&q=80" alt="Women Fashion"/><div class="trend-card-label">Women</div></div>
+  <div class="trend-card"><img src="https://images.unsplash.com/photo-1617952385804-7a0bd9558adb?w=300&q=80" alt="Men Fashion"/><div class="trend-card-label">Men</div></div>
+  <div class="trend-card"><img src="https://images.unsplash.com/photo-1583744946564-b52ac1c389c8?w=300&q=80" alt="Ethnic"/><div class="trend-card-label">Ethnic</div></div>
+  <div class="trend-card"><img src="https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=300&q=80" alt="Footwear"/><div class="trend-card-label">Footwear</div></div>
+  <div class="trend-card"><img src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=300&q=80" alt="Beauty"/><div class="trend-card-label">Beauty</div></div>
+</div>
+
+<!-- PRODUCTS GRID -->
+<div class="section-head fade-in">
+  <h2>Hot <span>Deals</span></h2>
+  <a class="see-all">See all →</a>
+</div>
+<div class="filter-bar fade-in">
+  <div class="filter-chip active">All ▾</div>
+  <div class="filter-chip">Price ▾</div>
+  <div class="filter-chip">Discount ▾</div>
+  <div class="filter-chip">Brand ▾</div>
+  <div class="filter-chip">Sort ▾</div>
+</div>
+<div class="products-grid fade-in" id="mainGrid">
+
+  <a class="product-card" href="#" onclick="return false">
+    <div class="product-img-wrap">
+      <img src="https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=400&q=80" alt="Floral Dress"/>
+      <div class="product-discount">52% OFF</div>
+      <button class="product-wish" onclick="toggleWish(this,event)">🤍</button>
+      <div class="platform-tag pt-myntra">Myntra</div>
+    </div>
+    <div class="product-info">
+      <div class="product-brand">MANGO</div>
+      <div class="product-name">Floral Wrap Midi Dress</div>
+      <div class="product-price-row">
+        <span class="product-price">₹1,199</span>
+        <span class="product-old">₹2,499</span>
+        <span class="product-off">52% off</span>
+      </div>
+      <div class="product-sizes"><span class="psize">XS</span><span class="psize">S</span><span class="psize">M</span><span class="psize">L</span></div>
+    </div>
+  </a>
+
+  <a class="product-card" href="#" onclick="return false">
+    <div class="product-img-wrap">
+      <img src="https://images.unsplash.com/photo-1520975954732-35dd22299614?w=400&q=80" alt="Casual Top"/>
+      <div class="product-discount">44% OFF</div>
+      <button class="product-wish" onclick="toggleWish(this,event)">🤍</button>
+      <div class="platform-tag pt-nykaa">Nykaa</div>
+    </div>
+    <div class="product-info">
+      <div class="product-brand">H&M</div>
+      <div class="product-name">Cotton Ribbed Crop Top</div>
+      <div class="product-price-row">
+        <span class="product-price">₹499</span>
+        <span class="product-old">₹899</span>
+        <span class="product-off">44% off</span>
+      </div>
+      <div class="product-sizes"><span class="psize">S</span><span class="psize">M</span><span class="psize">L</span><span class="psize">XL</span></div>
+    </div>
+  </a>
+
+  <a class="product-card" href="#" onclick="return false">
+    <div class="product-img-wrap">
+      <img src="https://images.unsplash.com/photo-1594938298603-c8148c4b4063?w=400&q=80" alt="Kurti"/>
+      <div class="product-discount">47% OFF</div>
+      <button class="product-wish" onclick="toggleWish(this,event)">🤍</button>
+      <div class="platform-tag pt-myntra">Myntra</div>
+    </div>
+    <div class="product-info">
+      <div class="product-brand">AURELIA</div>
+      <div class="product-name">Printed A-Line Kurti</div>
+      <div class="product-price-row">
+        <span class="product-price">₹799</span>
+        <span class="product-old">₹1,499</span>
+        <span class="product-off">47% off</span>
+      </div>
+      <div class="product-sizes"><span class="psize">S</span><span class="psize">M</span><span class="psize">L</span></div>
+    </div>
+  </a>
+
+  <a class="product-card" href="#" onclick="return false">
+    <div class="product-img-wrap">
+      <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&q=80" alt="Sneakers"/>
+      <div class="product-discount">40% OFF</div>
+      <button class="product-wish" onclick="toggleWish(this,event)">🤍</button>
+      <div class="platform-tag pt-myntra">Myntra</div>
+    </div>
+    <div class="product-info">
+      <div class="product-brand">PUMA</div>
+      <div class="product-name">Softride Running Shoes</div>
+      <div class="product-price-row">
+        <span class="product-price">₹1,499</span>
+        <span class="product-old">₹2,499</span>
+        <span class="product-off">40% off</span>
+      </div>
+      <div class="product-sizes"><span class="psize">6</span><span class="psize">7</span><span class="psize">8</span><span class="psize">9</span></div>
+    </div>
+  </a>
+
+  <a class="product-card" href="#" onclick="return false">
+    <div class="product-img-wrap">
+      <img src="https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400&q=80" alt="Skincare"/>
+      <div class="product-discount">43% OFF</div>
+      <button class="product-wish" onclick="toggleWish(this,event)">🤍</button>
+      <div class="platform-tag pt-nykaa">Nykaa</div>
+    </div>
+    <div class="product-info">
+      <div class="product-brand">MINIMALIST</div>
+      <div class="product-name">Vitamin C 10% Serum</div>
+      <div class="product-price-row">
+        <span class="product-price">₹569</span>
+        <span class="product-old">₹999</span>
+        <span class="product-off">43% off</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="product-card" href="#" onclick="return false">
+    <div class="product-img-wrap">
+      <img src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=400&q=80" alt="Jacket"/>
+      <div class="product-discount">55% OFF</div>
+      <button class="product-wish" onclick="toggleWish(this,event)">🤍</button>
+      <div class="platform-tag pt-myntra">Myntra</div>
+    </div>
+    <div class="product-info">
+      <div class="product-brand">JACK & JONES</div>
+      <div class="product-name">Slim Fit Denim Jacket</div>
+      <div class="product-price-row">
+        <span class="product-price">₹1,349</span>
+        <span class="product-old">₹2,999</span>
+        <span class="product-off">55% off</span>
+      </div>
+      <div class="product-sizes"><span class="psize">S</span><span class="psize">M</span><span class="psize">L</span><span class="psize">XL</span></div>
+    </div>
+  </a>
+
+</div>
+
+<!-- BANNER -->
+<div class="banner-strip fade-in">
+  <div>
+    <h3>END OF SEASON <span>SALE</span></h3>
+    <p>Up to 70% off on 10,000+ styles</p>
+  </div>
+  <button class="btn-banner">Shop Now →</button>
+</div>
+
+<!-- AI SECTION -->
+<div class="ai-section" id="aiSection">
+  <div class="ai-inner">
+    <div class="ai-badge">🤖 Styflake AI Assistant</div>
+    <h2 class="ai-title">YOUR PERSONAL<br><span>STYLE GURU.</span></h2>
+    <p class="ai-sub">Tell me what you need — I'll find the best deals from Nykaa & Myntra</p>
+
+    <div class="ai-search-box">
+      <input type="text" id="aiInput" placeholder="E.g. I need a saree for a wedding under Rs.3000..."/>
+      <button class="btn-ai-find" id="aiFindBtn" onclick="doAISearch()">Find ✦</button>
+    </div>
+
+    <div class="ai-chips">
+      <div class="ai-chip" onclick="fillAI('Party outfit for women under Rs.2000')">🎉 Party Outfit</div>
+      <div class="ai-chip" onclick="fillAI('Casual summer look under Rs.1000')">☀️ Summer Look</div>
+      <div class="ai-chip" onclick="fillAI('Men formal office wear under Rs.2500')">👔 Men Formal</div>
+      <div class="ai-chip" onclick="fillAI('Bridal lehenga under Rs.5000')">💍 Bridal</div>
+      <div class="ai-chip" onclick="fillAI('Complete skincare routine under Rs.2000')">✨ Skincare</div>
+    </div>
+
+    <div class="ai-limit-msg" id="aiLimitMsg">
+      🔒 Free searches used up! <strong>Upgrade to Premium</strong> for unlimited AI searches — just Rs.99/month
+    </div>
+
+    <div class="ai-results" id="aiResults">
+      <div class="ai-thinking-row" id="aiThinking">
+        <div class="tdot"></div><div class="tdot"></div><div class="tdot"></div>
+        <div class="ai-thinking-text">Styflake AI is finding the best deals...</div>
+      </div>
+      <div class="ai-response-box" id="aiResponse"></div>
+      <div class="ai-products-row" id="aiProductsRow"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MORE PRODUCTS -->
+<div class="section-head fade-in">
+  <h2>New <span>Arrivals</span></h2>
+  <a class="see-all">See all →</a>
+</div>
+<div class="products-grid fade-in">
+
+  <a class="product-card" href="#" onclick="return false">
+    <div class="product-img-wrap">
+      <img src="https://images.unsplash.com/photo-1581044777550-4cfa60707c03?w=400&q=80" alt="Ethnic Set"/>
+      <div class="product-discount">38% OFF</div>
+      <button class="product-wish" onclick="toggleWish(this,event)">🤍</button>
+      <div class="platform-tag pt-myntra">Myntra</div>
+    </div>
+    <div class="product-info">
+      <div class="product-brand">BIBA</div>
+      <div class="product-name">Embroidered Kurta Set</div>
+      <div class="product-price-row">
+        <span class="product-price">₹1,549</span>
+        <span class="product-old">₹2,499</span>
+        <span class="product-off">38% off</span>
+      </div>
+      <div class="product-sizes"><span class="psize">XS</span><span class="psize">S</span><span class="psize">M</span></div>
+    </div>
+  </a>
+
+  <a class="product-card" href="#" onclick="return false">
+    <div class="product-img-wrap">
+      <img src="https://images.unsplash.com/photo-1460353581641-37baddab0fa2?w=400&q=80" alt="Men Shirt"/>
+      <div class="product-discount">50% OFF</div>
+      <button class="product-wish" onclick="toggleWish(this,event)">🤍</button>
+      <div class="platform-tag pt-myntra">Myntra</div>
+    </div>
+    <div class="product-info">
+      <div class="product-brand">ALLEN SOLLY</div>
+      <div class="product-name">Slim Fit Formal Shirt</div>
+      <div class="product-price-row">
+        <span class="product-price">₹749</span>
+        <span class="product-old">₹1,499</span>
+        <span class="product-off">50% off</span>
+      </div>
+      <div class="product-sizes"><span class="psize">S</span><span class="psize">M</span><span class="psize">L</span><span class="psize">XL</span></div>
+    </div>
+  </a>
+
+</div>
+
+<!-- PREMIUM SECTION -->
+<div class="premium-section fade-in">
+  <h3>Unlock <span>Premium</span> — Just Rs.99/mo</h3>
+  <p>Get unlimited AI searches, zero ads, wishlists & price drop alerts</p>
+  <div class="premium-features">
+    <div class="pfeat"><span class="tick">✓</span> Unlimited AI Searches</div>
+    <div class="pfeat"><span class="tick">✓</span> Zero Ads</div>
+    <div class="pfeat"><span class="tick">✓</span> Wishlist</div>
+    <div class="pfeat"><span class="tick">✓</span> Price Drop Alerts</div>
+    <div class="pfeat"><span class="tick">✓</span> Exclusive Deals</div>
+  </div>
+  <button class="btn-upgrade-main" onclick="showModal()">Get Premium — Rs.99/month ⚡</button>
+  <div class="premium-note">Or Rs.799/year (save 2 months free) • Cancel anytime</div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo"><span>Sty</span>flake</div>
+  <div class="footer-tagline">Your Style, Our AI — Best deals from Nykaa & Myntra</div>
+  <div class="footer-links">
+    <a href="#">About</a>
+    <a href="#">Privacy</a>
+    <a href="#">Terms</a>
+    <a href="#">Contact</a>
+    <a href="#">Affiliate</a>
+  </div>
+  <div class="footer-bottom">© 2025 <span>Styflake</span>. All rights reserved. Affiliate partner of Nykaa & Myntra.</div>
+</footer>
+
+<!-- PREMIUM MODAL -->
+<div class="modal-overlay" id="premiumModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <button class="modal-close" onclick="hideModal()">✕</button>
+    <div class="modal-title">Get <span>Premium</span> ⚡</div>
+    <div class="modal-sub">Unlimited AI + Zero Ads + Price Alerts</div>
+    <div class="plan-row">
+      <div class="plan-box">
+        <div class="plan-box-name">FREE</div>
+        <div class="plan-box-price">₹0</div>
+        <div class="pf"><span class="y">✓</span> 2 AI searches/day</div>
+        <div class="pf"><span class="n">✗</span> Ads shown</div>
+        <div class="pf"><span class="n">✗</span> No wishlist</div>
+        <div class="pf"><span class="n">✗</span> No price alerts</div>
+      </div>
+      <div class="plan-box best">
+        <div class="plan-box-name">PREMIUM ⚡</div>
+        <div class="plan-box-price">₹99<sub>/mo</sub></div>
+        <div class="pf"><span class="y">✓</span> Unlimited AI</div>
+        <div class="pf"><span class="y">✓</span> Zero ads</div>
+        <div class="pf"><span class="y">✓</span> Wishlist</div>
+        <div class="pf"><span class="y">✓</span> Price alerts</div>
+      </div>
+    </div>
+    <button class="btn-go" onclick="hideModal()">Start Premium — ₹99/month</button>
+    <div class="modal-annual">Or <span>₹799/year</span> — save 2 months free!</div>
+    <div class="modal-fine">Cancel anytime. No hidden charges.</div>
+  </div>
+</div>
+
+<script>
+// ── STATE
+let aiSearches = 0;
+const MAX_AI = 2;
+
+// ── PRODUCTS DATA
+const aiProducts = {
+  party: [
+    { brand:"MANGO", name:"Floral Party Dress", price:"₹1,199", old:"₹2,499", img:"https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=400&q=80", platform:"myntra", off:"52% OFF" },
+    { brand:"H&M", name:"Sequin Mini Dress", price:"₹899", old:"₹1,799", img:"https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&q=80", platform:"nykaa", off:"50% OFF" },
+    { brand:"ZARA", name:"Satin Slip Dress", price:"₹1,499", old:"₹2,999", img:"https://images.unsplash.com/photo-1539008835657-9e8e9680c956?w=400&q=80", platform:"myntra", off:"50% OFF" },
+    { brand:"FOREVER 21", name:"Bodycon Ruched Dress", price:"₹799", old:"₹1,499", img:"https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=400&q=80", platform:"nykaa", off:"47% OFF" }
+  ],
+  office: [
+    { brand:"AND", name:"Formal Blazer Set", price:"₹1,899", old:"₹3,499", img:"https://images.unsplash.com/photo-1583744946564-b52ac1c389c8?w=400&q=80", platform:"myntra", off:"46% OFF" },
+    { brand:"W", name:"Printed Straight Kurta", price:"₹899", old:"₹1,599", img:"https://images.unsplash.com/photo-1594938298603-c8148c4b4063?w=400&q=80", platform:"myntra", off:"44% OFF" },
+    { brand:"ALLEN SOLLY", name:"Slim Formal Shirt", price:"₹749", old:"₹1,499", img:"https://images.unsplash.com/photo-1460353581641-37baddab0fa2?w=400&q=80", platform:"myntra", off:"50% OFF" },
+    { brand:"VAN HEUSEN", name:"Stretch Chinos", price:"₹1,199", old:"₹2,199", img:"https://images.unsplash.com/photo-1473966968600-fa801b869a1a?w=400&q=80", platform:"nykaa", off:"45% OFF" }
+  ],
+  lehenga: [
+    { brand:"LIBAS", name:"Bridal Lehenga Choli", price:"₹4,499", old:"₹8,999", img:"https://images.unsplash.com/photo-1610189352649-a98feee5a63c?w=400&q=80", platform:"myntra", off:"50% OFF" },
+    { brand:"ANOUK", name:"Embroidered Lehenga", price:"₹3,299", old:"₹5,999", img:"https://images.unsplash.com/photo-1583391733956-6c78276477e2?w=400&q=80", platform:"nykaa", off:"45% OFF" },
+    { brand:"MEENA BAZAAR", name:"Designer Chaniya Choli", price:"₹2,799", old:"₹4,999", img:"https://images.unsplash.com/photo-1617952385804-7a0bd9558adb?w=400&q=80", platform:"myntra", off:"44% OFF" },
+    { brand:"ETHNIX", name:"Woven Silk Lehenga", price:"₹3,799", old:"₹6,999", img:"https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=400&q=80", platform:"nykaa", off:"46% OFF" }
+  ],
+  sneakers: [
+    { brand:"PUMA", name:"Softride Running Shoes", price:"₹1,499", old:"₹2,499", img:"https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&q=80", platform:"myntra", off:"40% OFF" },
+    { brand:"NIKE", name:"Air Max Lite Sneakers", price:"₹2,799", old:"₹4,999", img:"https://images.unsplash.com/photo-1579338559194-a162d19bf842?w=400&q=80", platform:"myntra", off:"44% OFF" },
+    { brand:"ADIDAS", name:"Ultraboost Casual", price:"₹2,299", old:"₹3,999", img:"https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=400&q=80", platform:"nykaa", off:"43% OFF" },
+    { brand:"SKECHERS", name:"Memory Foam Walkfit", price:"₹1,799", old:"₹2,999", img:"https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=400&q=80", platform:"myntra", off:"40% OFF" }
+  ],
+  skincare: [
+    { brand:"MINIMALIST", name:"Vitamin C 10% Serum", price:"₹569", old:"₹999", img:"https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400&q=80", platform:"nykaa", off:"43% OFF" },
+    { brand:"DOT & KEY", name:"Hyaluronic Moisturiser", price:"₹449", old:"₹799", img:"https://images.unsplash.com/photo-1571781926291-c477ebfd024b?w=400&q=80", platform:"nykaa", off:"44% OFF" },
+    { brand:"RE'EQUIL", name:"SPF 50 PA+++ Sunscreen", price:"₹399", old:"₹699", img:"https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=400&q=80", platform:"nykaa", off:"43% OFF" },
+    { brand:"PLUM", name:"Green Tea Face Wash", price:"₹279", old:"₹499", img:"https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=400&q=80", platform:"nykaa", off:"44% OFF" }
+  ],
+  default: [
+    { brand:"VERO MODA", name:"Maxi Floral Dress", price:"₹1,299", old:"₹2,499", img:"https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=400&q=80", platform:"myntra", off:"48% OFF" },
+    { brand:"GLOBAL DESI", name:"Palazzo Pants Set", price:"₹899", old:"₹1,699", img:"https://images.unsplash.com/photo-1548624313-0396a93c7b57?w=400&q=80", platform:"nykaa", off:"47% OFF" },
+    { brand:"LAVIE", name:"Structured Handbag", price:"₹1,199", old:"₹2,199", img:"https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=400&q=80", platform:"myntra", off:"45% OFF" },
+    { brand:"JACK & JONES", name:"Denim Slim Jeans", price:"₹1,099", old:"₹1,999", img:"https://images.unsplash.com/photo-1542272604-787c3835535d?w=400&q=80", platform:"myntra", off:"45% OFF" }
+  ]
+};
+
+const aiMessages = {
+  party: "Found <strong>4 stunning party looks</strong> for you! The MANGO Floral Dress is trending this week on Myntra. All picks are <strong>under your budget with 47%+ off!</strong> 🎉",
+  office: "Here are <strong>4 power office looks!</strong> The AND Blazer Set is a bestseller this season. Stylish, professional, and all <strong>under Rs.2500!</strong> 💼",
+  lehenga: "Shaadi ready! 💍 <strong>4 gorgeous lehengas</strong> found — all under Rs.5000. LIBAS Bridal Lehenga has <strong>50% off today only.</strong> Don't miss it!",
+  sneakers: "Fresh kicks alert! 👟 <strong>4 top sneakers</strong> for you. PUMA & NIKE are the most popular this week. All stylish and <strong>under Rs.3000!</strong>",
+  skincare: "Glow time! ✨ <strong>4 must-have skincare picks</strong> from Nykaa. MINIMALIST Vitamin C is India's #1 bestseller. All <strong>under Rs.700!</strong>",
+  default: "Found <strong>4 amazing picks</strong> for you from Nykaa & Myntra! These are trending this week with <strong>44%+ discounts.</strong> 🛍️"
+};
+
+function getCategory(q) {
+  q = q.toLowerCase();
+  if (q.includes('party') || q.includes('dress') || q.includes('evening') || q.includes('night out')) return 'party';
+  if (q.includes('office') || q.includes('formal') || q.includes('work') || q.includes('corporate')) return 'office';
+  if (q.includes('lehenga') || q.includes('wedding') || q.includes('shaadi') || q.includes('bridal') || q.includes('ethnic')) return 'lehenga';
+  if (q.includes('sneaker') || q.includes('shoe') || q.includes('footwear') || q.includes('boot')) return 'sneakers';
+  if (q.includes('skin') || q.includes('beauty') || q.includes('serum') || q.includes('glow') || q.includes('face')) return 'skincare';
+  return 'default';
+}
+
+async function doAISearch() {
+  const query = document.getElementById('aiInput').value.trim();
+  if (!query) return;
+
+  if (aiSearches >= MAX_AI) {
+    document.getElementById('aiLimitMsg').style.display = 'block';
+    showModal();
+    return;
+  }
+
+  aiSearches++;
+  document.getElementById('aiFindBtn').disabled = true;
+  document.getElementById('aiFindBtn').textContent = 'Finding...';
+
+  const results = document.getElementById('aiResults');
+  const thinking = document.getElementById('aiThinking');
+  const response = document.getElementById('aiResponse');
+  const productsRow = document.getElementById('aiProductsRow');
+
+  results.className = 'ai-results visible';
+  thinking.style.display = 'flex';
+  response.className = 'ai-response-box';
+  productsRow.innerHTML = '';
+
+  results.scrollIntoView({ behavior:'smooth', block:'start' });
+
+  await sleep(2000);
+  thinking.style.display = 'none';
+
+  const cat = getCategory(query);
+  response.innerHTML = aiMessages[cat];
+  response.className = 'ai-response-box visible';
+
+  aiProducts[cat].forEach((p, i) => {
+    setTimeout(() => {
+      const card = document.createElement('a');
+      card.className = 'ai-product-card';
+      card.href = '#';
+      card.onclick = (e) => e.preventDefault();
+      const ptClass = p.platform === 'myntra' ? 'pt-myntra' : 'pt-nykaa';
+      const ptName  = p.platform === 'myntra' ? 'Myntra' : 'Nykaa';
+      card.innerHTML = `
+        <div class="ai-prod-img"><img src="${p.img}" alt="${p.name}" loading="lazy"/></div>
+        <div class="ai-prod-info">
+          <div class="ai-prod-brand">${p.brand}</div>
+          <div class="ai-prod-name">${p.name}</div>
+          <div>
+            <span class="ai-prod-price">${p.price}</span>
+            <span class="ai-prod-old">${p.old}</span>
+          </div>
+          <div class="ai-prod-tag">${ptName} • ${p.off}</div>
+        </div>
+      `;
+      productsRow.appendChild(card);
+    }, i * 120);
+  });
+
+  document.getElementById('aiFindBtn').disabled = false;
+  document.getElementById('aiFindBtn').textContent = 'Find ✦';
+
+  if (aiSearches >= MAX_AI) {
+    setTimeout(() => {
+      document.getElementById('aiLimitMsg').style.display = 'block';
+    }, 1500);
+  }
+}
+
+function quickSearch(q) {
+  document.getElementById('aiInput').value = q;
+  scrollToAI();
+}
+
+function fillAI(q) {
+  document.getElementById('aiInput').value = q;
+  document.getElementById('aiInput').focus();
+}
+
+function scrollToAI() {
+  const q = document.getElementById('heroInput').value;
+  if (q) document.getElementById('aiInput').value = q;
+  document.getElementById('aiSection').scrollIntoView({ behavior:'smooth' });
+  setTimeout(() => document.getElementById('aiInput').focus(), 600);
+}
+
+function toggleWish(btn, e) {
+  e.preventDefault(); e.stopPropagation();
+  btn.classList.toggle('liked');
+  btn.textContent = btn.classList.contains('liked') ? '❤️' : '🤍';
+}
+
+function setActive(el) {
+  document.querySelectorAll('.nav-cat').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function showModal() { document.getElementById('premiumModal').className = 'modal-overlay visible'; }
+function hideModal() { document.getElementById('premiumModal').className = 'modal-overlay'; }
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// SCROLL FADE IN
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold:0.1 });
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+// Enter key
+document.getElementById('aiInput').addEventListener('keypress', e => { if (e.key==='Enter') doAISearch(); });
+document.getElementById('heroInput').addEventListener('keypress', e => { if (e.key==='Enter') scrollToAI(); });
+</script>
+</body>
+</html>
